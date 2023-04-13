@@ -7,16 +7,47 @@ import os
 
 phishingDataSrc = "../../trainingData/phishing/phishing.csv"
 abs_path = os.path.abspath(phishingDataSrc)
+curdir = os.getcwd()
+print(curdir)
 
 # reading csv file and extracting class column to y.
 x = pd.read_csv(abs_path)
+
+#Convert CSV to arrays
 a = np.array(x)
-y = a[:,49] # classes having 0 and 1
+y = a[:,111] # Column 112 | 1: Phishing, Non-Phishing: 0
 
-# extracting two features
-x = np.column_stack((x.NumDots,x.UrlLength))
+# extracting two features from X
+x = np.column_stack((x.qty_redirects, x.tls_ssl_certificate))
 
-# 569 samples and 2 features
+#Only train on the first 10000 rows
+trainingX = x[:10000]
+trainingY = y[:10000]
+testingX = x[-10000:]
+testingY = y[-10000:]
+
+# 58645 Samples
 x.shape
 
-print (x),(y)
+print ("Length of x:", len(trainingX))
+print(x)
+print ("Length of y:", len(trainingY))
+print(y)
+
+print("Training")
+# import support vector classifier 
+# "Support Vector Classifier"
+from sklearn.svm import SVC  
+clf = SVC(kernel='linear') 
+  
+# fitting x samples and y classes 
+clf.fit(x, y) 
+print("Predicting")
+
+print("0 0",clf.predict([[0, 0]]))
+print("1 0",clf.predict([[1, 0]]))
+print("0 1",clf.predict([[0, 1]]))
+print("0 2",clf.predict([[0, 2]]))
+
+
+
