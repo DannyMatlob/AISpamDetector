@@ -7,8 +7,6 @@ import os
 
 phishingDataSrc = "../../trainingData/phishing/phishing.csv"
 abs_path = os.path.abspath(phishingDataSrc)
-curdir = os.getcwd()
-print(curdir)
 
 # reading csv file and extracting class column to y.
 x = pd.read_csv(abs_path)
@@ -42,8 +40,14 @@ clf = SVC(kernel='linear')
   
 # fitting x samples and y classes 
 clf.fit(x, y) 
-print("Predicting")
 
+#Save the model to a file
+print("Saving the Model")
+from joblib import dump, load
+dump(clf, 'testModel.joblib') 
+
+#Run tests
+print("Predicting")
 print("0 0",clf.predict([[0, 0]]))
 print("1 0",clf.predict([[1, 0]]))
 print("0 1",clf.predict([[0, 1]]))
