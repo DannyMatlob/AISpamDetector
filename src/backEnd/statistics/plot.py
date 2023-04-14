@@ -1,9 +1,11 @@
 # importing required libraries
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from joblib import dump, load
 from sklearn.preprocessing import MinMaxScaler
-import modelTrainers
+import seaborn as sns
+import time
 import os
 
 # find source file for training
@@ -14,7 +16,7 @@ abs_path = os.path.abspath(phishingDataSrc)
 data = pd.read_csv(abs_path)
 
 # extracting F important features from x
-f = 12
+f = 5
 columnList = load("columns.joblib")
 columnList = columnList[:f]
 print(columnList)
@@ -22,23 +24,18 @@ y = data['phishing']
 x = data[columnList]
 
 #Only train on the first N rows
-n = 30000
-testN = 20000
+n = 1000
 
-trainingX = x[:n]   
+trainingX = x[:n]
 trainingY = y[:n]
-testingX = x[-testN:].reset_index(drop=True)
-testingY = y[-testN:].reset_index(drop=True)
 
 #Scale the data
 scaling = MinMaxScaler(feature_range=(-1,1)).fit(trainingX)
-trainingX = scaling.fit_transform(trainingX)
-testingX = scaling.fit_transform(testingX)
+scaledX = scaling.fit_transform(trainingX)
 
-print("Training ", n, "rows on top", f, " features")
-
-modelTrainers.SVM(trainingX, trainingY, testingX, testingY)
-#modelTrainers.RFC(trainingX, trainingY, testingX, testingY)
-
-
-
+fig, ax = plt.subplots(1, 2, figsize=(15, 3))
+sns.histplot(trainingX, ax=ax[0], kde=True, legend=False)
+ax[0].set_title("Original Data")
+sns.histplot(scaledX, ax=ax[1], kde=True, legend=False)
+ax[1].set_title("Scaled data")
+plt.show()

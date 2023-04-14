@@ -33,5 +33,3 @@ def corr_heatmap(data, idx_s, idx_e):
     temp['labels'] = y
     sns.heatmap(temp.corr(), annot=True, fmt='.2f')
     plt.show()
-
-corr_heatmap(data, 10, 112)
