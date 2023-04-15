@@ -7,25 +7,23 @@ import modelTrainers
 import os
 
 # find source file for training
-phishingDataSrc = "../../trainingData/phishing/PhishingBETTER.csv"
+phishingDataSrc = "../../trainingData/phishing/phishing.csv"
 abs_path = os.path.abspath(phishingDataSrc)
 
 # reading csv file and extracting class column to y.
 data = pd.read_csv(abs_path)
 
-# extracting features from x
+# extracting F important features from x
+f = 12
+columnList = load("columns.joblib")
+columnList = columnList[:f]
+print(columnList)
 y = data['phishing']
-x = data.iloc[:, :10]
-
-'''
-print(x,"\n")
-print(y)
-#exit()
-'''
+x = data[columnList]
 
 #Only train on the first N rows
-n = 5000
-testN = 5000
+n = 30000
+testN = 20000
 
 trainingX = x[:n]   
 trainingY = y[:n]
@@ -37,10 +35,10 @@ scaling = MinMaxScaler(feature_range=(-1,1)).fit(trainingX)
 trainingX = scaling.fit_transform(trainingX)
 testingX = scaling.fit_transform(testingX)
 
-print("Training ", n, "rows")
+print("Training ", n, "rows on top", f, " features")
 
-#modelTrainers.SVM(trainingX, trainingY, testingX, testingY)
-modelTrainers.RFC(trainingX, trainingY, testingX, testingY)
+modelTrainers.SVM(trainingX, trainingY, testingX, testingY)
+#modelTrainers.RFC(trainingX, trainingY, testingX, testingY)
 
 
 

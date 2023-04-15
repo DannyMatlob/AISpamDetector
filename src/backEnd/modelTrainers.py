@@ -19,7 +19,7 @@ def SVM(trainingX, trainingY, testingX, testingY):
     print("Total Training time: ", elapsed_time, "seconds")
 
     #Save Model
-    dump(clf, 'testModel.joblib') 
+    dump(clf, 'SVM.joblib') 
 
     #Test model
     test(clf, testingX, testingY)
@@ -40,6 +40,9 @@ def RFC(trainingX, trainingY, testingX, testingY):
     end_time = time.time()
     elapsed_time = end_time - start_time
     print("Total Training time: ", elapsed_time, "seconds")
+
+    #Save Model
+    dump(rf, 'RFC.joblib') 
 
     print("Testing RF")
     #Test model
