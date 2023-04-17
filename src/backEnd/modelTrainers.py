@@ -28,7 +28,7 @@ def RFC(trainingX, trainingY, testingX, testingY):
     # Random Forest Classifier
     print("----\nRFC: \n----")
     from sklearn.ensemble import RandomForestClassifier
-    rf = RandomForestClassifier()
+    rf = RandomForestClassifier(n_estimators=100)
 
     #Start clock to time training
     start_time = time.time() 
