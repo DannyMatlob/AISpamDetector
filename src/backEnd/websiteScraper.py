@@ -1,21 +1,24 @@
+from collections import Counter
 import requests
 from bs4 import BeautifulSoup as bs
-from urllib.parse import urlparse as up
+from urllib.parse import urlparse
+from urllib.request import urlopen
+import urllib
+
 
 # Making a GET request
 
 url = 'https://www.geeksforgeeks.org/python-programming-language/'
 r = requests.get(url)
-
-total_Links = 0
  
 # check status code for response received
 # success code - 200
  
 soup = bs(r.content, 'html.parser')
 
+links_list = soup.find_all("a")
 
-# NumDash
+# 1. NumDash
 
 dashCount = 0
 
@@ -23,9 +26,9 @@ for c in r.url:
     if c == '-':
         dashCount += 1
 
-print("# of dashes in URL:", dashCount,'\n')
+print("1. # of dashes in URL:", dashCount,'\n')
 
-# NumNumericChars
+# 2. NumNumericChars
 
 numCount = 0
 
@@ -33,10 +36,10 @@ for c in r.url:
     if c.isnumeric():
         numCount += 1
 
-print("# of numeric values in URL:", numCount,"\n")
+print("2. # of numeric values in URL:", numCount,"\n")
 
 
-# NumSensitiveWords
+# 3. NumSensitiveWords
 
 numSensitive = 0 
 
@@ -46,29 +49,24 @@ for word in sensitive_words:
     if word in url:
         numSensitive += 1
 
-print('# of sensitive words: ',numSensitive,'\n')
+print('3. # of sensitive words: ',numSensitive,'\n')
 
 
-# PctExtHyperlinks
+# 4. PctExtHyperlinks
 
-extLink_Count = 0
-domain = up(url).netloc
+links = []
+for link in links_list:
+    links.append(link.get('href'))
 
-def is_external_link(link, domain):
-    parsed_link = up(link)
-    return parsed_link.netloc != domain
+external_links = [link for link in links if urlparse(link).netloc != '' and urlparse(link).netloc != urlparse(url).netloc]
+external_count = len(external_links)
 
+total_count = len(links)
 
-for link in soup.find_all("a"):
-    total_Links += 1
-    if is_external_link(link.get("href"), domain):
-        extLink_Count += 1
+percentage = (external_count / total_count) * 100
+print(f'Percentage of external hyperlinks: {percentage:.2f}%')
 
-print('Total # of links: ', total_Links)
-print('# of ext links: ', extLink_Count)
-print('% of links are ext ', extLink_Count/total_Links * 100, '%\n')
-
-# PctNullSelfRedirectHyperlinks
+# 5. PctNullSelfRedirectHyperlinks
 
 nsr_links = 0
 
@@ -87,31 +85,63 @@ def is_Null(link):
 
 
 
-for link in soup.find_all("a"):
+for link in links_list:
     if(is_Null(link)): 
         nsr_links += 1
 
-print('Total # of links: ', total_Links)
-print('# of null self redirecting links: ', nsr_links)
-print('% of links are ext ', nsr_links/total_Links * 100, '%\n')
+print('Total # of links: ',total_count)
+print('# of null self redirecting links: ',nsr_links)
+print('5. % of ext links are null, etc: ',nsr_links/total_count * 100, '%\n')
 
-# FrequentDomainNameMismatch
+# 6. FrequentDomainNameMismatch
 
-# SubmitInfoToEmail
+# extracts href, parses href for netloc (domain name), creates list of domain names
+domains = [urlparse(link.get('href')).netloc for link in links_list if urlparse(link.get('href')).netloc != '']
+
+# gets the most common domain name
+most_common_domain = Counter(domains).most_common(1)[0][0]
+
+# webpage domain name
+webpage_domain = urlparse(url).netloc
+
+print("Webpage domain name: ",webpage_domain)
+print("Most frequent HTML source code domain name: ",most_common_domain)
+print("Match?: ",most_common_domain == webpage_domain,'\n')
+
+# 7. SubmitInfoToEmail
 
 has_mailto = 0
 
-for link in soup.find_all("a"):
-    if(isinstance(link.get("href"), str) and 'mailto' in link.get("href")): 
-        has_mailto = 1
-        break
+if 'mailto' in soup.prettify():
+    has_mailto = 1
 
-print("Website has mailto:", has_mailto == 1)
+print("7. Website has mailto:",has_mailto == 1,'\n')
 
-# PctExtResourceUrlsRT
+# 8. PctExtResourceUrlsRT
 
-# ExtMetaScriptLinkRT
+urls = []
 
-# PctExtNullSelfRedirectHyperlinksRT
+
+for tag in soup.find_all():
+    for attribute_name, attribute_value in tag.attrs.items():
+        if attribute_name in ['src', 'href']:
+            parsed_url = urlparse(attribute_value)
+            urls.append(parsed_url)
+
+external_urls = [parsed_url for parsed_url in urls if parsed_url.netloc != '' and parsed_url.netloc != urlparse(url).netloc]
+external_count = len(external_urls)
+
+total_count = len(urls)
+
+percentage = (external_count / total_count) * 100
+print("external_count: ",external_count)
+print(f'Percentage of external resource URLs: {percentage:.2f}%')
+
+
+
+
+# 9. ExtMetaScriptLinkRT
+
+# 10. PctExtNullSelfRedirectHyperlinksRT
 
 
