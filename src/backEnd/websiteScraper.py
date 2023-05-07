@@ -4,16 +4,26 @@ from bs4 import BeautifulSoup as bs
 from urllib.parse import urlparse
 from urllib.request import urlopen
 import urllib
+import joblib
+import numpy
+import argparse
+
 
 
 # Making a GET request
 
-url = 'https://www.geeksforgeeks.org/python-programming-language/'
-r = requests.get(url)
- 
-# check status code for response received
-# success code - 200
- 
+parser = argparse.ArgumentParser()
+parser.add_argument("url", help="URL of the website to scrape")
+args = parser.parse_args()
+url = args.url
+
+try: 
+    r = requests.get(url)
+except:
+    print("Exception occured")
+
+array = []
+
 soup = bs(r.content, 'html.parser')
 
 links_list = soup.find_all("a")
@@ -27,6 +37,7 @@ for c in r.url:
         dashCount += 1
 
 print("1. # of dashes in URL:", dashCount,'\n')
+array.append(dashCount)
 
 # 2. NumNumericChars
 
@@ -37,7 +48,7 @@ for c in r.url:
         numCount += 1
 
 print("2. # of numeric values in URL:", numCount,"\n")
-
+array.append(numCount)
 
 # 3. NumSensitiveWords
 
@@ -50,7 +61,7 @@ for word in sensitive_words:
         numSensitive += 1
 
 print('3. # of sensitive words: ',numSensitive,'\n')
-
+array.append(numSensitive)
 
 # 4. PctExtHyperlinks
 
@@ -62,9 +73,11 @@ external_links = [link for link in links if urlparse(link).netloc != '' and urlp
 external_count = len(external_links)
 
 total_count = len(links)
+percentage = 0
 
-percentage = (external_count / total_count) * 100
-print(f'Percentage of external hyperlinks: {percentage:.2f}%')
+if(external_count != 0): percentage = (external_count / total_count) * 100
+print(f'4. Percentage of external hyperlinks: {percentage:.2f}%\n')
+array.append(percentage)
 
 # 5. PctNullSelfRedirectHyperlinks
 
@@ -89,9 +102,13 @@ for link in links_list:
     if(is_Null(link)): 
         nsr_links += 1
 
-print('Total # of links: ',total_count)
-print('# of null self redirecting links: ',nsr_links)
-print('5. % of ext links are null, etc: ',nsr_links/total_count * 100, '%\n')
+# print('Total # of links: ',total_count)
+# print('# of null self redirecting links: ',nsr_links)
+percentage = 0
+
+if(external_count != 0): percentage = (nsr_links/total_count) * 100
+print('5. % of ext links are null, etc: ',percentage, '%\n')
+array.append(percentage)
 
 # 6. FrequentDomainNameMismatch
 
@@ -99,14 +116,17 @@ print('5. % of ext links are null, etc: ',nsr_links/total_count * 100, '%\n')
 domains = [urlparse(link.get('href')).netloc for link in links_list if urlparse(link.get('href')).netloc != '']
 
 # gets the most common domain name
-most_common_domain = Counter(domains).most_common(1)[0][0]
+most_common_domain = ""
+if domains: most_common_domain = Counter(domains).most_common(1)[0][0]
 
 # webpage domain name
 webpage_domain = urlparse(url).netloc
 
 print("Webpage domain name: ",webpage_domain)
 print("Most frequent HTML source code domain name: ",most_common_domain)
-print("Match?: ",most_common_domain == webpage_domain,'\n')
+print("6. Frequent Domain Name Mismatch?: ",most_common_domain != webpage_domain,'\n')
+if most_common_domain != webpage_domain: array.append(0)
+else: array.append(1)
 
 # 7. SubmitInfoToEmail
 
@@ -116,6 +136,8 @@ if 'mailto' in soup.prettify():
     has_mailto = 1
 
 print("7. Website has mailto:",has_mailto == 1,'\n')
+if has_mailto == 1: array.append(1)
+else: array.append(0)
 
 # 8. PctExtResourceUrlsRT
 
@@ -133,15 +155,60 @@ external_count = len(external_urls)
 
 total_count = len(urls)
 
-percentage = (external_count / total_count) * 100
-print("external_count: ",external_count)
+if(external_count != 0 and total_count != 0): percentage = (external_count / total_count) * 100
+else: percentage = 0
 print(f'Percentage of external resource URLs: {percentage:.2f}%')
-
+if (percentage < 22): print("Legitimate\n"), array.append(-1)
+elif (percentage >= 22 and percentage > 61): print("Sus\n"), array.append(0)
+else: print("Phishing\n"), array.append(1)
 
 
 
 # 9. ExtMetaScriptLinkRT
 
+tags = []
+for tag in soup.find_all(['meta', 'script', 'link']):
+    tags.append(tag)
+
+external_tags = [tag for tag in tags for attribute_name, attribute_value in tag.attrs.items() if attribute_name in ['src', 'href'] and urlparse(attribute_value).netloc != '' and urlparse(attribute_value).netloc != urlparse(url).netloc]
+external_count = len(external_tags)
+
+total_count = len(tags)
+
+if(external_count != 0 and total_count != 0): percentage = (external_count / total_count) * 100
+else: percentage = 0
+print(f'Percentage of tags containing external URLs: {percentage:.2f}%')
+if percentage < 17:
+    print('Legitimate\n'), array.append(-1)
+elif percentage >= 17 and percentage <= 81:
+    print('Suspicious\n'), array.append(0)
+else:
+    print('Phishing\n'), array.append(1)
+
+
 # 10. PctExtNullSelfRedirectHyperlinksRT
 
+external_links = [link for link in links_list if urlparse(link.get('href')).netloc != urlparse(url).netloc or link.get('href').startswith('#') or link.get('href') == 'javascript:void(0)']
 
+external_count = len(external_links)
+total_count = len(links)
+
+if(external_count != 0 and total_count != 0): percentage = (external_count / total_count) * 100
+else: percentage = 0
+print(f'Percentage of external links: {percentage}%')
+if percentage < 31:
+    print('Legitimate\n'), array.append(-1)
+elif percentage >= 31 and percentage <= 67:
+    print('Suspicious\n'), array.append(0)
+else:
+    print('Phishing\n'), array.append(1)
+
+
+
+# Predicting
+
+model_path = "models/Phishing_RFC.joblib"
+model = joblib.load(model_path)
+input = numpy.array(array).reshape(1,-1)
+prediction = model.predict(input)
+print(prediction)
