@@ -190,7 +190,14 @@ else:
 
 dictionary = ['#','#skip','#content','javascript:void(0)']
 
-external_links = [link for link in links_list if urlparse(link.get('href')).netloc != urlparse(url).netloc or link.get('href') in dictionary]
+external_links = []
+for link in links_list:
+    href = link.get('href')
+    if href is not None:
+        parsed_href = urlparse(href)
+        if parsed_href.netloc:
+            if parsed_href.netloc != urlparse(url).netloc or href in dictionary:
+                external_links.append(link)
 
 external_count = len(external_links)
 total_count = len(links)
