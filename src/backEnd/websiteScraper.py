@@ -188,7 +188,7 @@ else:
 
 # 10. PctExtNullSelfRedirectHyperlinksRT
 
-dictionary = ['#','#skip','#content','javascript:void(0)']
+dictionary = ['#','#skip','#content','javascript:void(0)','']
 
 external_links = []
 for link in links_list:
@@ -198,6 +198,7 @@ for link in links_list:
         if parsed_href.netloc:
             if parsed_href.netloc != urlparse(url).netloc or href in dictionary:
                 external_links.append(link)
+                #print("href: ",href,"was counted as PCTNullSelfRedirect")
 
 external_count = len(external_links)
 total_count = len(links)
