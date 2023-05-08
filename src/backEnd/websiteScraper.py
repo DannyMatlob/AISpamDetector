@@ -118,21 +118,23 @@ def getPhishing(url):
         # 6. FrequentDomainNameMismatch
 
         # extracts href, parses href for netloc (domain name), creates list of domain names
-        domains = [urlparse(link.get('href')).netloc for link in links_list if urlparse(link.get('href')).netloc != '']
+        domains = []
+
+        for link in links_list:
+            if urlparse(link.get('href')).netloc:
+                domains.append(urlparse(link.get('href')).netloc)
+        
 
         # gets the most common domain name
-        
 
         # webpage domain name
         webpage_domain = urlparse(url).netloc
         webpage_domain = ".".join(webpage_domain.split(".")[-2:])
 
-        most_common_domain = ""
         if domains: 
             most_common_domain = Counter(domains).most_common(1)[0][0]
-            print(most_common_domain)
-            if webpage_domain in most_common_domain:
-                most_common_domain = ".".join(most_common_domain.split(".")[-2:])
+            most_common_domain = ".".join(most_common_domain.split(".")[-2:])
+                
 
         print("Webpage domain name: ",webpage_domain)
         print("Most frequent HTML source code domain name: ",most_common_domain)

@@ -94,3 +94,5 @@ result = websiteScraper.getPhishing('https://www.w3schools.com/python/python_try
 print('https://www.w3schools.com/python/python_try_except.asp', result,'\n')
 result = websiteScraper.getPhishing('https://dannymatlob.github.io/')
 print('https://dannymatlob.github.io/', result,'\n')
+result = websiteScraper.getPhishing('https://fmovies.to/')
+print('https://fmovies.to/', result,'\n')
