@@ -69,7 +69,12 @@ links = []
 for link in links_list:
     links.append(link.get('href'))
 
-external_links = [link for link in links if urlparse(link).netloc != '' and urlparse(link).netloc != urlparse(url).netloc]
+external_links = []
+for link in links:
+    parsed_link = urlparse(link)
+    if parsed_link.netloc != '' and parsed_link.netloc != urlparse(url).netloc:
+        external_links.append(link)
+
 external_count = len(external_links)
 
 total_count = len(links)
@@ -117,10 +122,13 @@ domains = [urlparse(link.get('href')).netloc for link in links_list if urlparse(
 
 # gets the most common domain name
 most_common_domain = ""
-if domains: most_common_domain = Counter(domains).most_common(1)[0][0]
+if domains: 
+    most_common_domain = Counter(domains).most_common(1)[0][0]
+    most_common_domain = ".".join(most_common_domain.split(".")[-2:])
 
 # webpage domain name
 webpage_domain = urlparse(url).netloc
+webpage_domain = ".".join(webpage_domain.split(".")[-2:])
 
 print("Webpage domain name: ",webpage_domain)
 print("Most frequent HTML source code domain name: ",most_common_domain)
@@ -150,7 +158,9 @@ for tag in soup.find_all():
             parsed_url = urlparse(attribute_value)
             urls.append(parsed_url)
 
-external_urls = [parsed_url for parsed_url in urls if parsed_url.netloc != '' and parsed_url.netloc != urlparse(url).netloc]
+external_urls = [parsed_url for parsed_url in urls 
+                 if parsed_url.netloc != '' and parsed_url.netloc != urlparse(url).netloc]
+
 external_count = len(external_urls)
 
 total_count = len(urls)
@@ -196,9 +206,12 @@ for link in links_list:
     if href is not None:
         parsed_href = urlparse(href)
         if parsed_href.netloc:
-            if parsed_href.netloc != urlparse(url).netloc or href in dictionary:
+            root_domain = '.'.join(parsed_href.netloc.split('.')[-2:])
+            url_root_domain = '.'.join(urlparse(url).netloc.split('.')[-2:])
+            if root_domain != url_root_domain or href in dictionary:
                 external_links.append(link)
                 #print("href: ",href,"was counted as PCTNullSelfRedirect")
+
 
 external_count = len(external_links)
 total_count = len(links)
