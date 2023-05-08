@@ -157,10 +157,10 @@ total_count = len(urls)
 
 if(external_count != 0 and total_count != 0): percentage = (external_count / total_count) * 100
 else: percentage = 0
-print(f'Percentage of external resource URLs: {percentage:.2f}%')
-if (percentage < 22): print("Legitimate\n"), array.append(-1)
-elif (percentage >= 22 and percentage > 61): print("Sus\n"), array.append(0)
-else: print("Phishing\n"), array.append(1)
+print(f'8. Percentage of external resource URLs: {percentage:.2f}%')
+if (percentage < 22): print("1\n"), array.append(1)
+elif (percentage >= 22 and percentage > 61): print("0\n"), array.append(0)
+else: print("-1\n"), array.append(-1)
 
 
 
@@ -177,31 +177,33 @@ total_count = len(tags)
 
 if(external_count != 0 and total_count != 0): percentage = (external_count / total_count) * 100
 else: percentage = 0
-print(f'Percentage of tags containing external URLs: {percentage:.2f}%')
+print(f'9. Percentage of tags containing external URLs: {percentage:.2f}%')
 if percentage < 17:
-    print('Legitimate\n'), array.append(-1)
+    print('1\n'), array.append(1)
 elif percentage >= 17 and percentage <= 81:
-    print('Suspicious\n'), array.append(0)
+    print('0\n'), array.append(0)
 else:
-    print('Phishing\n'), array.append(1)
+    print('-1\n'), array.append(-1)
 
 
 # 10. PctExtNullSelfRedirectHyperlinksRT
 
-external_links = [link for link in links_list if urlparse(link.get('href')).netloc != urlparse(url).netloc or link.get('href').startswith('#') or link.get('href') == 'javascript:void(0)']
+dictionary = ['#','#skip','#content','javascript:void(0)']
+
+external_links = [link for link in links_list if urlparse(link.get('href')).netloc != urlparse(url).netloc or link.get('href') in dictionary]
 
 external_count = len(external_links)
 total_count = len(links)
 
 if(external_count != 0 and total_count != 0): percentage = (external_count / total_count) * 100
 else: percentage = 0
-print(f'Percentage of external links: {percentage}%')
+print(f'10. Percentage of external links with different domain names, starts with "#", or using "JavaScript ::void(0)": {percentage}%')
 if percentage < 31:
-    print('Legitimate\n'), array.append(-1)
+    print('1\n'), array.append(1)
 elif percentage >= 31 and percentage <= 67:
-    print('Suspicious\n'), array.append(0)
+    print('0\n'), array.append(0)
 else:
-    print('Phishing\n'), array.append(1)
+    print('-1\n'), array.append(-1)
 
 
 
