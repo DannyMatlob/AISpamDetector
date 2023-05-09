@@ -9,12 +9,14 @@ from sklearn.linear_model import LogisticRegression
 import os
 import pickle
 
-abs_path_email_body_dataset = os.path.abspath('../../trainingData/completeSpamAssassin2.csv')
+abs_path_email_body_dataset = os.path.abspath('trainingData/spam/completeSpamAssassin2.csv')
+abs_path_email_subject_dataset = os.path.abspath('trainingData/spam/spam_ham_dataset.csv')
+abs_path_email_test_dataset = os.path.abspath('trainingData/spam/fraud_email_.csv')
 print(abs_path_email_body_dataset)
 
-df_body = pd.read_csv('E:\Projects\Python\CS166\phishingDetector\AISpamDetector\\trainingData\spam\completeSpamAssassin2.csv') #dataset for training body of email. 1 - spam 0 - ham
-df_subject = pd.read_csv('E:\Projects\Python\CS166\phishingDetector\AISpamDetector\\trainingData\spam\spam_ham_dataset.csv')#dataset for training subject of email. 1 - spam 0 - ham
-df_test = pd.read_csv('E:\Projects\Python\CS166\phishingDetector\AISpamDetector\\trainingData\spam\\fraud_email_.csv')#dataset for testing. 1 - spam, 0 - ham
+df_body = pd.read_csv(abs_path_email_body_dataset) #dataset for training body of email. 1 - spam 0 - ham
+df_subject = pd.read_csv(abs_path_email_subject_dataset)#dataset for training subject of email. 1 - spam 0 - ham
+df_test = pd.read_csv(abs_path_email_test_dataset)#dataset for testing. 1 - spam, 0 - ham
 # print(df_body.head())
 # print(df_body.tail())
 # print(df_body.shape)
@@ -50,16 +52,16 @@ x_body_features = vectorizer_body.fit_transform(x_body)
 print("x_body_features shape: ",x_body_features.shape)
 
 #model to use
-model_body = LogisticRegression()
+# model_body = LogisticRegression()
 # model_subject = LogisticRegression()
 
 #train data
-model_body.fit(x_body_features,y_body)
+# model_body.fit(x_body_features,y_body)
 # model_subject.fit(x_subject_features,y_subject)
 
 #save trained model
-with open('trained_spam_email_dataset_model','wb') as f:
-    pickle.dump(model_body,f)
+# with open('trained_spam_email_dataset_model','wb') as f:
+#     pickle.dump(model_body,f)
     
 with open('trained_spam_email_dataset_model','rb') as f:
     trained_model = pickle.load(f)
