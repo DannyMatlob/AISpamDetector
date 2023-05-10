@@ -43,7 +43,7 @@ def run_gui():
     window.title("Spam email Checker")
 
     #Vars
-    backgroundColor = "#a4ebe2"
+    backgroundColor = "#f7c1a3"
     my_font = ("Cascadia Code", 20)
     my_font_small = ("Cascadia Code", 16)
     my_font_tiny = ("Cascadia Code", 11)
