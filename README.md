@@ -18,7 +18,9 @@ The training Model that was used for spam detection was logistic regression. Log
 
 
 **Phishing Detection:**
+
 **Training Model**
+
 The first step to training the phishing detection model was to find a dataset. During the project term, we trained using two different datasets. The first dataset was much larger at 50,000 entries and 50 features per entry. Having trained a Support Vector Machine on the top 20 best features of the dataset, we arrived at a maximum accuracy of 86.7%. In order to discover the top features, we had to perform statistical correlations on the data, including a mutual info correlation, as well as a Spearman correlation. Training on more or less than 20 features resulted in decreased accuracy, therefore 20 features was the optimal amount to train on.
 
 We ran into the issue of vague and non-reproducible features however, and opted for a better documented, albeit smaller dataset. This new dataset comprised 10,000 entries with 10 features per entry, and resulted in an accuracy of 95% using a Random Forest Classifier. The features chosen for this dataset were based on a study that sought to find the top 10 features for phishing detection, and the features tended to be more robust and sophisticated. With a working and highly accurate model, we can now begin work on the website scraper in order to apply the model to websites outside of the training set.
@@ -34,21 +36,16 @@ After extracting the 10 features, based on this project and this study, we appen
 
 
 
-
-
-
-
 **Issues**
 
+An issue that we encountered during the implementation and testing of websiteScraper was that some websites had DDoS protection or were blocked by the current network, causing the program to not run properly. If a website would return an error code of 403 or 404, the HTML source code returned by the request library would be empty. The empty HTML source code caused the testing on legitimate and phishing websites to be incorrect, decreasing the accuracy of our program. We addressed this problem by surrounding the request.get() function in a try/except block and only running the program if we get a successful response, indicated by the status code 200.
 
-	An issue that we encountered during the implementation and testing of websiteScraper was that some websites had DDoS protection or were blocked by the current network, causing the program to not run properly. If a website would return an error code of 403 or 404, the HTML source code returned by the request library would be empty. The empty HTML source code caused the testing on legitimate and phishing websites to be incorrect, decreasing the accuracy of our program. We addressed this problem by surrounding the request.get() function in a try/except block and only running the program if we get a successful response, indicated by the status code 200.
-
-	Another issue that we faced was our predictions being incorrect due to the way that certain websites worked compared to our model. An example would be domain name mismatches. Our model predicts based on the domain name in HTML source code and the actual domain. A number of reputable websites use different domains and subdomains, which can affect our prediction results.
+Another issue that we faced was our predictions being incorrect due to the way that certain websites worked compared to our model. An example would be domain name mismatches. Our model predicts based on the domain name in HTML source code and the actual domain. A number of reputable websites use different domains and subdomains, which can affect our prediction results.
 
 **Results and Analysis**
 
 **Phishing**
-	We were able to get ~55% accuracy out of 34 legit websites. Therefore one problem with our program and model is that there is a high rate of false positives on legitimate websites, especially ones that are in languages other than english (naver, baidu, etc) . In the future, we would take into account different named subdomains during our feature extraction. However, a random sample of 22 websites from the PhishTank database gave us an accuracy of ~86%. 
+We were able to get ~55% accuracy out of 34 legit websites. Therefore one problem with our program and model is that there is a high rate of false positives on legitimate websites, especially ones that are in languages other than english (naver, baidu, etc) . In the future, we would take into account different named subdomains during our feature extraction. However, a random sample of 22 websites from the PhishTank database gave us an accuracy of ~86%. 
 
 
 **Spam email:**
