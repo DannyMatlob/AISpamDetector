@@ -1,7 +1,7 @@
 # AISpamDetector
 Group Project for CS 166: Information Security. Machine learning technique applied to Spam Detection
 
-**Project Overview **
+**Project Overview**
 
 Phishing is a prevalent online scam involving attackers posing as trustworthy entities to deceive victims into providing sensitive information, such as usernames, passwords, credit card numbers, and other personal data. The term "phishing" originates from the word "fishing," as attackers use baits designed to appear genuine and often mimic well-known companies or banks.
 During the COVID-19 pandemic in early 2020, there was a significant increase in phishing attacks targeting individuals seeking to make money online. Attackers exploited the situation by using fake NFT websites and job applications to scam people, stealing their personal information and money. 
